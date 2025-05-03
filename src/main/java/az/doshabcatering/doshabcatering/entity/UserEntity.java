@@ -1,12 +1,16 @@
 package az.doshabcatering.doshabcatering.entity;
 
 import az.doshabcatering.doshabcatering.enums.Roles;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "users")
@@ -15,7 +19,10 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class UserEntity {
+public class UserEntity implements Serializable {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -48,10 +55,15 @@ public class UserEntity {
 
     LocalDateTime updated_at;
 
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "orders_id")
+    @JsonBackReference
+    List<Orders> orders;
+
 
     @PostPersist
     private void assignDefaultValues() {
-        if(roles == null){
+        if (roles == null) {
             this.roles = Roles.USER;
         }
         this.created_at = LocalDateTime.now();

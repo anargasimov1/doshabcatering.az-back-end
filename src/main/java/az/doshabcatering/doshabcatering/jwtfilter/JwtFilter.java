@@ -9,16 +9,15 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Component
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -38,14 +37,19 @@ public class JwtFilter extends OncePerRequestFilter {
 
         if (token != null) {
             String username = jwtService.getUsernameFromToken(token);
-            String role = jwtService.getRolesFromToken(token).toString();
+
+            List<Map<String, String>> roles = jwtService.getRolesFromToken(token);
+
+            List<SimpleGrantedAuthority> authorities = roles.stream()
+                    .map(roleMap -> new SimpleGrantedAuthority(roleMap.get("authority")))
+                    .collect(Collectors.toList());
 
             if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+
                 UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
                         username,
                         null,
-                        Collections.singleton(new SimpleGrantedAuthority(role))
-
+                        authorities
                 );
                 System.out.println(usernamePasswordAuthenticationToken);
                 SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);

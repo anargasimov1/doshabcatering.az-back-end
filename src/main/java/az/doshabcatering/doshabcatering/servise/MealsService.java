@@ -21,44 +21,6 @@ public class MealsService {
     private final MealsRepo mealsRepo;
     public final CategoryService categoryService;
 
-    private static final String UPLOAD_DIR = System.getProperty("user.dir") + "/uploads/images";
-
-    @Value("${urlApp}")
-    private String url;
-
-    public Meals save(MultipartFile file, String name, String ingredient, Double price, String category1) throws IOException {
-        if (file.isEmpty()) {
-            throw new IllegalArgumentException("Empty file");
-        }
-
-        Path storageDirectory = Path.of(UPLOAD_DIR);
-
-        if (Files.notExists(storageDirectory)) {
-            Files.createDirectories(storageDirectory);
-        }
-
-        String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
-        Path targetPath = storageDirectory.resolve(fileName);
-
-        String imageUrl = url +"/uploads/images/" + fileName;
-
-        Files.write(targetPath, file.getBytes());
-
-        Category category = categoryService.findByName(category1);
-        if (category == null) {
-            throw new RuntimeException("Category not found");
-        }
-
-        Meals meals = new Meals();
-        meals.setName(name);
-        meals.setIngredients(ingredient);
-        meals.setPrice(price);
-        meals.setImageUrl(imageUrl);
-        meals.setCategory(category);
-
-        return mealsRepo.save(meals);
-    }
-
     public List<Meals> findAll() {
         return mealsRepo.findAll();
     }

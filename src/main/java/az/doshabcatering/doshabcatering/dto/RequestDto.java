@@ -16,8 +16,6 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class RequestDto {
 
-    String roles;
-
     @Size(min = 3, max = 20, message = "Ad xanası 3 ilə 20 simvol aralığında olmalıdır!")
     @NotEmpty(message = "Zəhmət olmasa ad xanasını doldurun!")
     String name;

@@ -9,4 +9,5 @@ public interface CategoryRepo extends JpaRepository<Category, Integer> {
 
     Optional<Category> findByName(String name);
 
+
 }

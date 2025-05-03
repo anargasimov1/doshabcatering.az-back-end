@@ -6,6 +6,7 @@ import az.doshabcatering.doshabcatering.entity.UserEntity;
 import az.doshabcatering.doshabcatering.servise.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,11 +19,11 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/register")
-    public String register(@RequestBody @Valid RequestDto requestDto) {
+    public ResponseEntity<?> register(@RequestBody @Valid RequestDto requestDto) {
         return authService.userRegistration(requestDto);
     }
 
-    @GetMapping("{email}")
+    @GetMapping("/{email}")
     public UserEntity getUserByEmail(@PathVariable String email) {
         return authService.getUserByEmail(email);
     }
@@ -35,6 +36,10 @@ public class AuthController {
     @GetMapping("/verify/{otp}")
     public ResponseEntity<?> verify(@PathVariable String otp) {
        return authService.userVerification(otp);
+    }
 
+    @GetMapping
+    private Page<UserEntity> listAllUsers(@RequestParam(defaultValue = "0") Integer pageNumber, @RequestParam(defaultValue = "2") Integer pageSize) {
+        return authService.listAllUsers(pageNumber, pageSize);
     }
 }

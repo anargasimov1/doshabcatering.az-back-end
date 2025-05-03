@@ -14,11 +14,7 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class CategoryService {
 
-    CategoryRepo categoryRepo;
-
-    public Category save(Category category) {
-        return categoryRepo.save(category);
-    }
+   CategoryRepo categoryRepo;
 
     public Category findByName(String name) {
         return categoryRepo.findByName(name).orElse(null);

@@ -1,5 +1,6 @@
 package az.doshabcatering.doshabcatering.servise;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,16 +16,17 @@ public class JwtService {
     @Value("${secretKey}")
     private String secretKey;
 
+
     public String generateToken(UserDetails userDetails) {
-        Map<String,Object> claims = new HashMap<>();
-        claims.put("roles",userDetails.getAuthorities());
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("roles", userDetails.getAuthorities());
 
         return Jwts.builder()
                 .claims(claims)
                 .subject(userDetails.getUsername())
                 .signWith(getSigningKey())
                 .issuedAt(new Date())
-                .expiration(new Date(System.currentTimeMillis()+(1000*60*60*4)))
+                .expiration(new Date(System.currentTimeMillis() + (1000 * 60 * 60 * 4)))
                 .compact();
 
 
@@ -39,25 +41,15 @@ public class JwtService {
                 .getSubject();
     }
 
-//    public List<String> getRolesFromToken(String token) {
-//        return (List<String>) Jwts.parser()
-//                .verifyWith(getSigningKey())
-//                .build()
-//                .parseSignedClaims(token)
-//                .getPayload()
-//                .get("roles", List.class)
-//                .stream()
-//                .filter(Objects::nonNull)
-//                .map(roleObj -> {
-//                    if (roleObj instanceof Map<?, ?> roleMap) {
-//                        Object authority = roleMap.get("authority");
-//                        return authority != null ? authority.toString() : null;
-//                    }
-//                    return null;
-//                })
-//                .filter(Objects::nonNull)
-//                .collect(Collectors.toList());
-//    }
+    public List<Map<String, String>> getRolesFromToken(String token) {
+        Claims claims = Jwts.parser()
+                .verifyWith(getSigningKey())
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
+
+        return (List<Map<String, String>>) claims.get("roles");
+    }
 
 
     private SecretKey getSigningKey() {

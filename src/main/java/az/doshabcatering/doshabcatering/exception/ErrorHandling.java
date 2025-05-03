@@ -7,7 +7,9 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.net.ConnectException;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -32,5 +34,16 @@ public class ErrorHandling {
     public ResponseEntity<String> handleException() {
         return new ResponseEntity<>("istifadeçi tapılmadı!", HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(ConnectException.class)
+    public ResponseEntity<Object> handleRedisConnectionException(ConnectException ex) {
+        Map<String, Object> body = new HashMap<>();
+        body.put("timestamp", LocalDateTime.now());
+        body.put("error", "Redis server-ə qoşulmaq mümkün olmadı.");
+        body.put("details", ex.getMessage());
+
+        return new ResponseEntity<>(body, HttpStatus.SERVICE_UNAVAILABLE);
+    }
+
 
 }
