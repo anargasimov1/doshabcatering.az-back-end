@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  doshabcatering:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: doshabcatering:latest
+    container_name: doshabcatering_container
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./uploads/images:/app/uploads/images
+    restart: unless-stopped
