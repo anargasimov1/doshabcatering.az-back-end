@@ -6,12 +6,11 @@ import az.doshabcatering.doshabcatering.dto.RequestDto;
 import az.doshabcatering.doshabcatering.dto.RequestLogin;
 import az.doshabcatering.doshabcatering.entity.UserEntity;
 import az.doshabcatering.doshabcatering.repository.UserRepository;
+import az.doshabcatering.doshabcatering.utils.HtmlTemplates;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -27,8 +26,10 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collections;
 
+
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AuthService implements UserDetailsService {
 
     private final UserRepository userRepository;
@@ -48,11 +49,6 @@ public class AuthService implements UserDetailsService {
         return new User(user.getEmail(), user.getPassword(), Collections.singleton(new SimpleGrantedAuthority(user.getRoles().toString())));
     }
 
-    public Page<UserEntity> listAllUsers(int pageNumber, int pageSize) {
-        PageRequest pageRequest = PageRequest.of(pageNumber, pageSize, Sort.by("id"));
-        return userRepository.findAll(pageRequest);
-    }
-
 
     @SneakyThrows
     public ResponseEntity<?> userRegistration(RequestDto requestDto) {
@@ -67,34 +63,28 @@ public class AuthService implements UserDetailsService {
         userEntity.setOtp(otp);
         userRepository.save(userEntity);
 
-        mailService.sendMail(requestDto.getEmail(), otp, "istifadəçi qeydiyyatı");
+        mailService.sendMail(requestDto.getEmail(), "istifadəçi qeydiyyatı", HtmlTemplates.userVerification(otp));
         return ResponseEntity.ok().body("uğurlu qeydiyyat!");
     }
 
     public ResponseEntity<?> userVerification(String otp) {
         UserEntity userEntity = userRepository.findByOtp(otp).orElse(null);
-        if (userEntity == null) {
-            throw new UsernameNotFoundException(otp);
+        try {
+            if (userEntity == null) {
+                throw new UsernameNotFoundException(otp);
+            }
+            String otpCheck = userEntity.getOtp();
+            if (otpCheck.equals(otp)) {
+                userEntity.setVerified(true);
+                userRepository.save(userEntity);
+
+                return ResponseEntity.ok().body(HtmlTemplates.htmlResponse());
+
+            }
+            return new ResponseEntity<>("istifadeci tapilmadi", HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
-        String otpCheck = userEntity.getOtp();
-        if (otpCheck.equals(otp)) {
-            userEntity.setVerified(true);
-            userRepository.save(userEntity);
-
-            String htmlResponse = "<html>" +
-                    "<head>" +
-                    "<meta http-equiv=\"refresh\" content=\"3;url=https://doshabcatering.az/\" />" +
-                    "</head>" +
-                    "<body>" +
-                    "<h1>Hesabınız uğurla təsdiqləndi!</h1>" +
-                    "<p>3 saniyə sonra ana səhifəyə yönləndiriləcəksiniz...</p>" +
-                    "</body>" +
-                    "</html>";
-
-            return ResponseEntity.ok().body(htmlResponse);
-
-        }
-        return new ResponseEntity<>("istifadeci tapilmadi", HttpStatus.BAD_REQUEST);
     }
 
     public ResponseEntity<?> login(RequestLogin requestLogin) {
@@ -115,7 +105,7 @@ public class AuthService implements UserDetailsService {
         GenerateRandomOtp generateRandomOtp = new GenerateRandomOtp();
         String otp = generateRandomOtp.generateOTP();
         user.setOtp(otp);
-        mailService.sendMail(email,otp,"parolun yenilenmesi");
+        mailService.sendMail(email, "parolun yenilenmesi", HtmlTemplates.passwordUpdate(otp));
         userRepository.save(user);
         return new ResponseEntity<>(HttpStatus.OK);
     }

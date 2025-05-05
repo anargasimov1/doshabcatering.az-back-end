@@ -55,8 +55,7 @@ public class UserEntity implements Serializable {
 
     LocalDateTime updated_at;
 
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "orders_id")
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonBackReference
     List<Orders> orders;
 

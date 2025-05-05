@@ -1,6 +1,7 @@
 package az.doshabcatering.doshabcatering.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -11,6 +12,7 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -32,15 +34,17 @@ public class Orders implements Serializable {
     @Column(nullable = false)
     String meals;
 
-    @Column(nullable = false)
-    Double price;
+    @Column
+    String prince;
 
     @CreationTimestamp
     LocalDateTime date;
 
-    Integer location;
+    Double location;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    @JsonManagedReference
     UserEntity user;
 
 }

@@ -6,14 +6,12 @@ import az.doshabcatering.doshabcatering.entity.UserEntity;
 import az.doshabcatering.doshabcatering.servise.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("auth")
 @RequiredArgsConstructor
-@CrossOrigin("*")
 public class AuthController {
 
     private final AuthService authService;
@@ -38,8 +36,4 @@ public class AuthController {
        return authService.userVerification(otp);
     }
 
-    @GetMapping
-    private Page<UserEntity> listAllUsers(@RequestParam(defaultValue = "0") Integer pageNumber, @RequestParam(defaultValue = "2") Integer pageSize) {
-        return authService.listAllUsers(pageNumber, pageSize);
-    }
 }
