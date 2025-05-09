@@ -23,6 +23,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
 
@@ -50,6 +51,7 @@ public class AuthService implements UserDetailsService {
     }
 
 
+    @Transactional
     @SneakyThrows
     public ResponseEntity<?> userRegistration(RequestDto requestDto) {
         UserEntity userEntity = new UserEntity();
@@ -100,14 +102,27 @@ public class AuthService implements UserDetailsService {
         }
     }
 
-    public ResponseEntity<?> upDatePassword(String email) throws MessagingException {
+    @Transactional
+    @SneakyThrows
+    public ResponseEntity<?> sendOtpForUpdatePassword(String email){
         UserEntity user = getUserByEmail(email);
         GenerateRandomOtp generateRandomOtp = new GenerateRandomOtp();
         String otp = generateRandomOtp.generateOTP();
         user.setOtp(otp);
-        mailService.sendMail(email, "parolun yenilenmesi", HtmlTemplates.passwordUpdate(otp));
         userRepository.save(user);
+        mailService.sendMail(email, "parolun yenilənməsi", HtmlTemplates.passwordUpdate(otp));
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    public ResponseEntity<?> upDatePassword(String otp, String newPassword) {
+        UserEntity user = userRepository.findByOtp(otp).orElse(null);
+
+        if (user.getOtp().equals(otp)) {
+            user.setPassword(passwordEncoder.encode(newPassword));
+            userRepository.save(user);
+            return new ResponseEntity<>("parolunuz uğurla yeniləndi!",HttpStatus.OK);
+        }
+        return new ResponseEntity<>("nəsə doğru olmadı birdə cəhd edin",HttpStatus.BAD_REQUEST);
     }
 
 }

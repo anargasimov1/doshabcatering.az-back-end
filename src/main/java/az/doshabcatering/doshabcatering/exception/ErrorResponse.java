@@ -7,9 +7,9 @@ import java.time.LocalDateTime;
 
 @Setter
 @Getter
-@NoArgsConstructor
-@AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
+@AllArgsConstructor
+@NoArgsConstructor
 public class ErrorResponse<T> {
 
     LocalDateTime timestamp;
