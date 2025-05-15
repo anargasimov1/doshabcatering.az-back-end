@@ -1,5 +1,6 @@
 package az.doshabcatering.doshabcatering.entity;
 
+import az.doshabcatering.doshabcatering.enums.Status;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -9,8 +10,6 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.hibernate.annotations.CreationTimestamp;
 
-import java.io.Serial;
-import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -20,29 +19,33 @@ import java.util.UUID;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @NoArgsConstructor
 @AllArgsConstructor
-public class Orders implements Serializable {
+public class Orders {
 
-    @Serial
-    private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     UUID Id;
 
-    @Column(nullable = false)
     String meals;
 
-    @Column
     String prince;
 
     @CreationTimestamp
     LocalDateTime date;
 
-    Double location;
+    @Enumerated(EnumType.STRING)
+    Status status;
+
+    String location;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
     @JsonManagedReference
     UserEntity user;
+
+    @PrePersist
+    void prePersist() {
+        this.status = Status.PENDING;
+    }
 
 }

@@ -60,7 +60,7 @@ public class UserEntity implements Serializable {
     List<Orders> orders;
 
 
-    @PostPersist
+    @PrePersist
     private void assignDefaultValues() {
         if (roles == null) {
             this.roles = Roles.USER;

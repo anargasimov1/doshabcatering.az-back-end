@@ -36,4 +36,14 @@ public class HtmlTemplates {
                 "<br><p>Hörmətlə,<br>Doshabcatering komandası</p>" +
                 "</body></html>";
     }
+
+    public static String Message(String name) {
+        return "<html><body>" +
+                "<p>Salam, " + name + "</p>" +
+                "<p>Mesajınız Doshabcatering komandasına göndərildi tezliklə sizə geri dönüş ediləcək</p>" +
+                "<p style='font-size: 18px; font-weight: bold;'>Bizə müraciət etdiyinizə görə sizə təşşəkkür edirik</p>" +
+                "<p>Əgər bu sorğunu siz etməmisinizsə, xahiş edirik bu mesajı nəzərə almayın.</p>" +
+                "<br><p>Hörmətlə,<br>Doshabcatering komandası</p>" +
+                "</body></html>";
+    }
 }

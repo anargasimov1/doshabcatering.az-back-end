@@ -10,10 +10,10 @@ import java.time.LocalDateTime;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @AllArgsConstructor
 @NoArgsConstructor
-public class ErrorResponse<T> {
+public class ErrorResponse {
 
     LocalDateTime timestamp;
-    String message;
-    T errors;
+    String errorMessage;
+    int status;
 
 }

@@ -1,7 +1,7 @@
 package az.doshabcatering.doshabcatering.controller;
 
 import az.doshabcatering.doshabcatering.entity.Category;
-import az.doshabcatering.doshabcatering.servise.CategoryService;
+import az.doshabcatering.doshabcatering.servise.appService.CategoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 

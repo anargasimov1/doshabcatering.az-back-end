@@ -1,6 +1,6 @@
 package az.doshabcatering.doshabcatering.jwtfilter;
 
-import az.doshabcatering.doshabcatering.servise.JwtService;
+import az.doshabcatering.doshabcatering.servise.appService.JwtService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

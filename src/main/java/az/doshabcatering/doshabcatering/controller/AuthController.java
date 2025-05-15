@@ -1,10 +1,10 @@
 package az.doshabcatering.doshabcatering.controller;
 
-import az.doshabcatering.doshabcatering.dto.PasswordRequestDto;
-import az.doshabcatering.doshabcatering.dto.RequestDto;
-import az.doshabcatering.doshabcatering.dto.RequestLogin;
+import az.doshabcatering.doshabcatering.dto.request.PasswordRequestDto;
+import az.doshabcatering.doshabcatering.dto.request.RequestDto;
+import az.doshabcatering.doshabcatering.dto.request.RequestLogin;
 import az.doshabcatering.doshabcatering.entity.UserEntity;
-import az.doshabcatering.doshabcatering.servise.AuthService;
+import az.doshabcatering.doshabcatering.servise.appService.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -20,11 +20,6 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody @Valid RequestDto requestDto) {
         return authService.userRegistration(requestDto);
-    }
-
-    @GetMapping("/{email}")
-    public UserEntity getUserByEmail(@PathVariable String email) {
-        return authService.getUserByEmail(email);
     }
 
     @PostMapping("/login")

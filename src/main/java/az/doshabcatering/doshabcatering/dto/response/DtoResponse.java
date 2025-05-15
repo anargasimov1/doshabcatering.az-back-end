@@ -1,30 +1,25 @@
-package az.doshabcatering.doshabcatering.documents;
+package az.doshabcatering.doshabcatering.dto.response;
 
-
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.data.elasticsearch.annotations.Document;
 
-@Document(indexName = "users")
+import java.time.LocalDateTime;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Users {
+public class DtoResponse {
 
-    @Id
     Integer id;
-
     String name;
     String surname;
     String email;
     String phone_number;
-    Boolean isActive;
+    boolean is_Verified;
+    LocalDateTime created_at;
 
 }
