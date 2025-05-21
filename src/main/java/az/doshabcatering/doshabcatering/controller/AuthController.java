@@ -3,8 +3,8 @@ package az.doshabcatering.doshabcatering.controller;
 import az.doshabcatering.doshabcatering.dto.request.PasswordRequestDto;
 import az.doshabcatering.doshabcatering.dto.request.RequestDto;
 import az.doshabcatering.doshabcatering.dto.request.RequestLogin;
-import az.doshabcatering.doshabcatering.entity.UserEntity;
 import az.doshabcatering.doshabcatering.servise.appService.AuthService;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -22,9 +22,10 @@ public class AuthController {
         return authService.userRegistration(requestDto);
     }
 
+
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody @Valid RequestLogin requestLogin) {
-        return authService.login(requestLogin);
+    public ResponseEntity<?> login(@RequestBody @Valid RequestLogin requestLogin, HttpServletResponse httpServletResponse) {
+        return authService.login(requestLogin, httpServletResponse);
     }
 
     @GetMapping("/verify/{otp}")

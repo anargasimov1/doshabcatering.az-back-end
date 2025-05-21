@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -42,9 +43,9 @@ public class ErrorHandling {
     }
 
     @ExceptionHandler(value = UsernameNotFoundException.class)
-    public ErrorResponse handleException(UsernameNotFoundException ex) {
-        log.error(ex.getMessage());
-        return new ErrorResponse(LocalDateTime.now(), "user not found", HttpStatus.NOT_FOUND.value());
+    public ResponseEntity<?> handleException(UsernameNotFoundException ex) {
+        log.error("{}user not found", ex.getMessage());
+        return new ResponseEntity<>(new ErrorResponse(LocalDateTime.now(), ex.getMessage() + "user not found", HttpStatus.BAD_REQUEST.value()), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(value = ConnectException.class)
@@ -53,10 +54,16 @@ public class ErrorHandling {
         return new ErrorResponse(LocalDateTime.now(), ex.getMessage(), HttpStatus.SERVICE_UNAVAILABLE.value());
     }
 
-    @ExceptionHandler(value = Exception.class)
-    public ErrorResponse handleException(Exception ex) {
+    @ExceptionHandler(value = BadCredentialsException.class)
+    public ResponseEntity<ErrorResponse> handleBadCredentialsException(BadCredentialsException ex) {
         log.error(ex.getMessage());
-        return new ErrorResponse(LocalDateTime.now(), ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value());
+        return new ResponseEntity<>(new ErrorResponse(LocalDateTime.now(), ex.getMessage(), HttpStatus.BAD_REQUEST.value()), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(value = Exception.class)
+    public ResponseEntity<?> handleException(Exception ex) {
+        log.error(ex.getMessage());
+        return new ResponseEntity<>(new ErrorResponse(LocalDateTime.now(), ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
 }

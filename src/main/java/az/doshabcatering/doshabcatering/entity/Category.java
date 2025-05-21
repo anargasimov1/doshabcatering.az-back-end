@@ -1,5 +1,6 @@
 package az.doshabcatering.doshabcatering.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -28,7 +29,8 @@ public class Category implements Serializable {
     @Column(nullable = false, unique = true)
     String name;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
+    @JsonBackReference
     List<Meals> mealsList;
 }

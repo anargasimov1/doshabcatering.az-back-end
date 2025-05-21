@@ -19,5 +19,9 @@ public class ElasticUsersService {
         return elasticRepo.save(users);
     }
 
+    public Users findById(Integer id) {
+        return elasticRepo.findById(id).orElse(null);
+    }
+
 
 }

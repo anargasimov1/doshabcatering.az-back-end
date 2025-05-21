@@ -13,12 +13,10 @@ import java.util.List;
 public class MealsService {
 
     private final MealsRepo mealsRepo;
-    public final CategoryService categoryService;
 
-    @Cacheable(value = "meals")
+    @Cacheable(value = "meals", key = "'all'")
     public List<Meals> findAll() {
         return mealsRepo.findAll();
     }
 
 }
-

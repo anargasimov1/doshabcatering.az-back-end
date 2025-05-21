@@ -6,6 +6,8 @@ import az.doshabcatering.doshabcatering.repository.jpaRepo.MealsRepo;
 import az.doshabcatering.doshabcatering.servise.appService.CategoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -28,11 +30,13 @@ public class AdminMealsService {
     @Value("${urlApp}")
     private String url;
 
+    @CacheEvict(value = "meals", key = "'all'")
+    @CachePut(value = "meals", key = "#result.id")
     public Meals save(MultipartFile file, String name, String ingredient, Double price, String category1) throws IOException {
         if (file.isEmpty()) {
             throw new IllegalArgumentException("Empty file");
         }
-        if(!Objects.requireNonNull(file.getContentType()).equals("image/jpeg")){
+        if (!Objects.requireNonNull(file.getContentType()).equals("image/jpeg")) {
             throw new IllegalArgumentException("Not a JPEG file");
         }
 
@@ -45,7 +49,7 @@ public class AdminMealsService {
         String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
         Path targetPath = storageDirectory.resolve(fileName);
 
-        String imageUrl = url +"/uploads/images/" + fileName;
+        String imageUrl = url + "/uploads/images/" + fileName;
 
         Files.write(targetPath, file.getBytes());
 
@@ -62,11 +66,12 @@ public class AdminMealsService {
         meals.setCategory(category);
 
         return mealsRepo.save(meals);
+
     }
 
-    public ResponseEntity<?> delete(Integer id){
-         mealsRepo.deleteById(id);
-         return ResponseEntity.ok("uğurla silindi!");
+    public ResponseEntity<?> delete(Integer id) {
+        mealsRepo.deleteById(id);
+        return ResponseEntity.ok("uğurla silindi!");
     }
 }
 

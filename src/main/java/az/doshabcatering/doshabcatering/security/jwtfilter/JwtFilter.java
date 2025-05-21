@@ -1,8 +1,9 @@
-package az.doshabcatering.doshabcatering.jwtfilter;
+package az.doshabcatering.doshabcatering.security.jwtfilter;
 
-import az.doshabcatering.doshabcatering.servise.appService.JwtService;
+import az.doshabcatering.doshabcatering.security.jwt.JwtService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AccessLevel;
@@ -27,17 +28,27 @@ public class JwtFilter extends OncePerRequestFilter {
     JwtService jwtService;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        String authorizationHeader = request.getHeader("Authorization");
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+            throws ServletException, IOException {
+
         String token = null;
 
+        String authorizationHeader = request.getHeader("Authorization");
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             token = authorizationHeader.substring(7);
         }
 
-        if (token != null) {
-            String username = jwtService.getUsernameFromToken(token);
+        if (token == null && request.getCookies() != null) {
+            for (Cookie cookie : request.getCookies()) {
+                if ("token".equals(cookie.getName())) {
+                    token = cookie.getValue();
+                    break;
+                }
+            }
+        }
 
+        if (token != null && jwtService.isValid(token)) {
+            String username = jwtService.getUsernameFromToken(token);
             List<Map<String, String>> roles = jwtService.getRolesFromToken(token);
 
             List<SimpleGrantedAuthority> authorities = roles.stream()
@@ -45,17 +56,16 @@ public class JwtFilter extends OncePerRequestFilter {
                     .collect(Collectors.toList());
 
             if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-
-                UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
+                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                         username,
                         null,
                         authorities
                 );
-
-                SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+                SecurityContextHolder.getContext().setAuthentication(authToken);
             }
         }
 
         filterChain.doFilter(request, response);
     }
+
 }

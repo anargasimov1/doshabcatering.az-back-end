@@ -7,11 +7,14 @@ import az.doshabcatering.doshabcatering.dto.request.RequestDto;
 import az.doshabcatering.doshabcatering.dto.request.RequestLogin;
 import az.doshabcatering.doshabcatering.entity.UserEntity;
 import az.doshabcatering.doshabcatering.repository.jpaRepo.UserRepository;
+import az.doshabcatering.doshabcatering.security.jwt.JwtService;
 import az.doshabcatering.doshabcatering.servise.elasticService.ElasticUsersService;
 import az.doshabcatering.doshabcatering.servise.mail.MailService;
 import az.doshabcatering.doshabcatering.utils.HtmlTemplates;
+import jakarta.mail.MessagingException;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
@@ -29,8 +32,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 
 
 @Service
@@ -57,7 +58,6 @@ public class AuthService implements UserDetailsService {
     }
 
     @Transactional
-    @SneakyThrows
     public ResponseEntity<?> userRegistration(RequestDto requestDto) {
         if (userRepository.findByEmail(requestDto.getEmail()).isPresent()) {
             log.info("User with email {} already exists", requestDto.getEmail());
@@ -77,8 +77,12 @@ public class AuthService implements UserDetailsService {
         elasticService.save(users);
         log.info("User with email {} has been created in elasticsearch", users.getEmail());
 
-        mailService.sendMail(requestDto.getEmail(), "istifadəçi qeydiyyatı", HtmlTemplates.userVerification(otp));
-        return ResponseEntity.ok().body("uğurlu qeydiyyat!");
+        try {
+            mailService.sendMail(requestDto.getEmail(), "istifadəçi qeydiyyatı", HtmlTemplates.userVerification(otp));
+        } catch (MessagingException ex) {
+            log.error(ex.getMessage());
+        }
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     public ResponseEntity<?> userVerification(String otp) {
@@ -90,9 +94,12 @@ public class AuthService implements UserDetailsService {
             String otpCheck = userEntity.getOtp();
             if (otpCheck.equals(otp)) {
                 userEntity.setVerified(true);
+                userEntity.setOtp(null);
                 userRepository.save(userEntity);
-                log.info("User with otp {} has been verified", otp);
-
+                Users users = elasticService.findById(userEntity.getId());
+                users.setIsActive(true);
+                elasticService.save(users);
+                log.info("User with email {} has been verified", userEntity.getEmail());
                 return ResponseEntity.ok().body(HtmlTemplates.htmlResponse());
 
             }
@@ -103,7 +110,7 @@ public class AuthService implements UserDetailsService {
         }
     }
 
-    public ResponseEntity<?> login(RequestLogin requestLogin) {
+    public ResponseEntity<?> login(RequestLogin requestLogin, HttpServletResponse response) {
         loadUserByUsername(requestLogin.getEmail());
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(requestLogin.getEmail(), requestLogin.getPassword()));
 
@@ -114,24 +121,31 @@ public class AuthService implements UserDetailsService {
             UserEntity user = userRepository.findByEmail(requestLogin.getEmail()).orElse(null);
             DtoResponse dtoResponse = new DtoResponse();
             BeanUtils.copyProperties(user, dtoResponse);
-            Map<String, Object> claims = new HashMap<>();
-            claims.put("token", userToken);
-            claims.put("userInfo", dtoResponse);
-            return new ResponseEntity<>(claims, HttpStatus.OK);
+            Cookie cookie = new Cookie("token", userToken);
+            cookie.setSecure(false);
+            cookie.setMaxAge(3600 * 4);
+            cookie.setPath("/");
+            cookie.setHttpOnly(true);
+            response.addCookie(cookie);
+
+            return ResponseEntity.status(200).body(dtoResponse);
         } else {
-            return new ResponseEntity<>("nəsə düzgün getmədi!", HttpStatus.UNAUTHORIZED);
+            return ResponseEntity.status(401).body("istidafəçi adı və ya şifrə yalnışdır!");
         }
     }
 
     @Transactional
-    @SneakyThrows
     public ResponseEntity<?> sendOtpForUpdatePassword(String email) {
         UserEntity user = getUserByEmail(email);
         GenerateRandomOtp generateRandomOtp = new GenerateRandomOtp();
         String otp = generateRandomOtp.generateOTP();
         user.setOtp(otp);
         userRepository.save(user);
-        mailService.sendMail(email, "parolun yenilənməsi", HtmlTemplates.passwordUpdate(otp));
+        try {
+            mailService.sendMail(email, "parolun yenilənməsi", HtmlTemplates.passwordUpdate(otp));
+        } catch (MessagingException ex) {
+            log.error(ex.getMessage());
+        }
         log.info("User with email {} has been send otp for update password", email);
         return new ResponseEntity<>(HttpStatus.OK);
     }

@@ -35,8 +35,7 @@ public class Meals implements Serializable {
     @Column(nullable = false)
     Double price;
 
-    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JsonBackReference
+    @ManyToOne(fetch = FetchType.EAGER)
     Category category;
 
 

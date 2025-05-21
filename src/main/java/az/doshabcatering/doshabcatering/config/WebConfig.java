@@ -14,11 +14,13 @@ public class WebConfig implements WebMvcConfigurer {
                 .addResourceLocations("file:" + System.getProperty("user.dir") + "/uploads/");
     }
 
+
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-                .allowedOrigins("http://localhost:3000", "https://doshabcatering.az", "https://www.doshabcatering.az")
+                .allowedOriginPatterns("http://localhost:3000", "http://localhost:5500", "https://doshabcatering.az", "https://www.doshabcatering.az")
                 .allowedMethods("GET", "POST", "PUT", "DELETE")
+                .allowedHeaders("*")
                 .allowCredentials(true);
     }
 }

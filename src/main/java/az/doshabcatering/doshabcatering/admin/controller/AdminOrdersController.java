@@ -14,6 +14,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/admin/orders")
 @RequiredArgsConstructor
+@CrossOrigin(originPatterns = "*", methods = {RequestMethod.GET, RequestMethod.DELETE})
 public class AdminOrdersController {
 
     private final AdminOrdersService adminOrdersService;

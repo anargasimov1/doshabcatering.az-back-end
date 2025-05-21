@@ -1,4 +1,4 @@
-package az.doshabcatering.doshabcatering.servise.appService;
+package az.doshabcatering.doshabcatering.security.jwt;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -33,21 +33,12 @@ public class JwtService {
     }
 
     public String getUsernameFromToken(String token) {
-        return Jwts.parser()
-                .verifyWith(getSigningKey())
-                .build()
-                .parseSignedClaims(token)
-                .getPayload()
-                .getSubject();
+        return getAllClaims(token).getSubject();
     }
 
+    @SuppressWarnings("unchecked")
     public List<Map<String, String>> getRolesFromToken(String token) {
-        Claims claims = Jwts.parser()
-                .verifyWith(getSigningKey())
-                .build()
-                .parseSignedClaims(token)
-                .getPayload();
-
+        Claims claims = getAllClaims(token);
         return (List<Map<String, String>>) claims.get("roles");
     }
 
@@ -55,5 +46,25 @@ public class JwtService {
     private SecretKey getSigningKey() {
         byte[] keyBytes = Base64.getDecoder().decode(secretKey);
         return Keys.hmacShaKeyFor(keyBytes);
+    }
+
+    public Claims getAllClaims(String token) {
+        return Jwts
+                .parser()
+                .verifyWith(getSigningKey())
+                .build().parseSignedClaims(token)
+                .getPayload();
+    }
+
+    public boolean isValid(String token) {
+        try {
+            Claims claims = getAllClaims(token);
+
+            Date expiration = claims.getExpiration();
+            return expiration.after(new Date());
+
+        } catch (Exception e) {
+            return false;
+        }
     }
 }

@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.Objects;
 import java.util.UUID;
 
 @Service
@@ -43,7 +42,6 @@ public class AdminOrdersService {
         }
     }
 
-
     public Page<Orders> findBetweenDate(Pageable pageable) {
         LocalDate today = LocalDate.now();
         LocalDateTime startOfDay = today.atTime(8, 0);
@@ -55,6 +53,5 @@ public class AdminOrdersService {
         orderRepository.deleteById(id);
         return ResponseEntity.ok("uğurla silindi!");
     }
-
 
 }

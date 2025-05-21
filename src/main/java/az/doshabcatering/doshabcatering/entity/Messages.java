@@ -1,6 +1,7 @@
 package az.doshabcatering.doshabcatering.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.hibernate.annotations.CreationTimestamp;
@@ -24,6 +25,7 @@ public class Messages {
 
     String fullName;
 
+    @Email(message = "email format düzgün deyil!")
     String email;
     String subject;
     String message;

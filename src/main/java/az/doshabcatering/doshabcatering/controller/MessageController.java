@@ -2,6 +2,7 @@ package az.doshabcatering.doshabcatering.controller;
 
 import az.doshabcatering.doshabcatering.entity.Messages;
 import az.doshabcatering.doshabcatering.servise.appService.MessageService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,7 +17,7 @@ public class MessageController {
     private final MessageService messageService;
 
     @PostMapping
-    public ResponseEntity<String> save(@RequestBody Messages messages) {
+    public ResponseEntity<String> save(@RequestBody @Valid Messages messages) {
         return messageService.save(messages);
     }
 

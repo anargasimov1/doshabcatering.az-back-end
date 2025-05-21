@@ -12,6 +12,7 @@ import java.io.IOException;
 @RestController
 @RequestMapping("/admin/meals")
 @RequiredArgsConstructor
+@CrossOrigin(originPatterns = "*", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE})
 public class AdminMealsController {
 
     private final AdminMealsService adminMealsService;
