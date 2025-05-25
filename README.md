@@ -114,7 +114,9 @@ Yüklənmiş şəkillər `uploads/images/` qovluğunda saxlanılır. API bu fayl
 
 ## 📄 Lisenziya
 
-Hazırda layihə üçün rəsmi lisenziya əlavə olunmayıb.
+## Lisenziya
+
+Bu layihə MIT lisenziyası ilə təmin olunub. Ətraflı məlumat üçün [LICENSE](LICENSE) faylına baxın.
 
 ---
 
