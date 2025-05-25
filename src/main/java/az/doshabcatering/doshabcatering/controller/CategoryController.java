@@ -23,5 +23,4 @@ public class CategoryController {
         return categoryService.findByName(name);
     }
 
-
 }

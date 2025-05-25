@@ -45,7 +45,7 @@ public class ErrorHandling {
     @ExceptionHandler(value = UsernameNotFoundException.class)
     public ResponseEntity<?> handleException(UsernameNotFoundException ex) {
         log.error("{}user not found", ex.getMessage());
-        return new ResponseEntity<>(new ErrorResponse(LocalDateTime.now(), ex.getMessage() + "user not found", HttpStatus.BAD_REQUEST.value()), HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(new ErrorResponse(LocalDateTime.now(),  "İstifadəçi tapılmadı!", HttpStatus.BAD_REQUEST.value()), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(value = ConnectException.class)
@@ -57,7 +57,7 @@ public class ErrorHandling {
     @ExceptionHandler(value = BadCredentialsException.class)
     public ResponseEntity<ErrorResponse> handleBadCredentialsException(BadCredentialsException ex) {
         log.error(ex.getMessage());
-        return new ResponseEntity<>(new ErrorResponse(LocalDateTime.now(), ex.getMessage(), HttpStatus.BAD_REQUEST.value()), HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(new ErrorResponse(LocalDateTime.now(), "istifadəçi adı və ya email səhvdir!", HttpStatus.BAD_REQUEST.value()), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(value = Exception.class)

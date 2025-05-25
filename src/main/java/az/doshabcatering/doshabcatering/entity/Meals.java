@@ -38,5 +38,4 @@ public class Meals implements Serializable {
     @ManyToOne(fetch = FetchType.EAGER)
     Category category;
 
-
 }

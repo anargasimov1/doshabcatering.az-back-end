@@ -21,10 +21,4 @@ public class MessageController {
         return messageService.save(messages);
     }
 
-    @GetMapping("/{id}")
-    public Messages findById(@PathVariable UUID id) {
-        return messageService.findById(id);
-    }
-
-
 }

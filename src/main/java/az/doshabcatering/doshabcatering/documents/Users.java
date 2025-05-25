@@ -1,8 +1,5 @@
 package az.doshabcatering.doshabcatering.documents;
 
-
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -22,9 +19,12 @@ public class Users {
     Integer id;
 
     String name;
+
     String surname;
+
     String email;
+
     String phone_number;
-    Boolean isActive;
+
 
 }

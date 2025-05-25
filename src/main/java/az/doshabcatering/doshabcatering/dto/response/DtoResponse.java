@@ -1,5 +1,6 @@
 package az.doshabcatering.doshabcatering.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -15,11 +16,18 @@ import java.time.LocalDateTime;
 public class DtoResponse {
 
     Integer id;
+
     String name;
+
     String surname;
+
     String email;
+
     String phone_number;
-    boolean is_Verified;
+
+    boolean isVerified;
+
+    @JsonFormat(pattern = "dd-MM-yyyy HH:mm")
     LocalDateTime created_at;
 
 }

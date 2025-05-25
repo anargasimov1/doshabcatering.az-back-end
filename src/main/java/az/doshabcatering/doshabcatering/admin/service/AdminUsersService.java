@@ -13,8 +13,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 @Service
 @RequiredArgsConstructor
 public class AdminUsersService {
@@ -33,9 +31,6 @@ public class AdminUsersService {
         });
     }
 
-    public UserEntity getUserWithOrders(String email) {
-        return userRepository.findByIdWithOrders(email).orElse(null);
-    }
 
     public Page<UserEntity> listAllUsersWithOrders(int num, int size) {
         PageRequest pageRequest = PageRequest.of(num, size, Sort.by("id"));

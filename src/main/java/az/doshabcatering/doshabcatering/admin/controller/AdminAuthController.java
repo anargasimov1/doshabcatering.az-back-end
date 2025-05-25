@@ -21,10 +21,6 @@ public class AdminAuthController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/{email}")
-    public UserEntity getUserWithOrders(@PathVariable String email) {
-        return adminUsersService.getUserWithOrders(email);
-    }
 
     @GetMapping("/allusers")
     public Page<UserEntity> getUsersWithOrders(@RequestParam(defaultValue = "0") int size, @RequestParam(defaultValue = "10") int page) {

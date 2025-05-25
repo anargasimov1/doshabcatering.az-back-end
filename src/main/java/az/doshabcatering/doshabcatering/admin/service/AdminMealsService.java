@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -69,9 +70,13 @@ public class AdminMealsService {
 
     }
 
+    @Caching(evict = {
+            @CacheEvict(value = "meals", key = "'all'"),
+            @CacheEvict(value = "meals", key = "#id")
+    })
     public ResponseEntity<?> delete(Integer id) {
         mealsRepo.deleteById(id);
-        return ResponseEntity.ok("uğurla silindi!");
+        return ResponseEntity.ok("");
     }
 }
 

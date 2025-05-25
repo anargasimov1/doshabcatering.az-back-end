@@ -14,7 +14,7 @@ public class AdminCategoryController {
     private final AdminCategoryService adminCategoryService;
 
     @PostMapping
-    public ResponseEntity<?> createCategory(@RequestBody Category category) {
+    public Category createCategory(@RequestBody Category category) {
         return adminCategoryService.save(category);
     }
 

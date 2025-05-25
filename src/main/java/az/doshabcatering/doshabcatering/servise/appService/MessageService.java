@@ -9,8 +9,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.UUID;
-
 @Service
 @Slf4j
 @RequiredArgsConstructor
@@ -34,7 +32,4 @@ public class MessageService {
         return ResponseEntity.ok("mesajınız uğurla göndərildi!");
     }
 
-    public Messages findById(UUID id) {
-        return messageRepo.findById(id).orElse(null);
-    }
 }

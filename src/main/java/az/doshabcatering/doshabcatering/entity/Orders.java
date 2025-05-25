@@ -1,9 +1,8 @@
 package az.doshabcatering.doshabcatering.entity;
 
 import az.doshabcatering.doshabcatering.enums.Status;
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -33,12 +32,15 @@ public class Orders {
     String prince;
 
     @CreationTimestamp
+    @JsonFormat(pattern = "dd.MM.YYYY")
     LocalDateTime date;
 
     @Enumerated(EnumType.STRING)
     Status status;
 
-    String location;
+    String lat;
+
+    String lng;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")

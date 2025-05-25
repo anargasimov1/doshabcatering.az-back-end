@@ -1,5 +1,6 @@
 package az.doshabcatering.doshabcatering.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import lombok.*;
@@ -27,10 +28,14 @@ public class Messages {
 
     @Email(message = "email format düzgün deyil!")
     String email;
+
     String subject;
+
     String message;
+
     String phone;
 
     @CreationTimestamp
+    @JsonFormat(pattern = "dd-MM-yyyy HH:mm")
     LocalDateTime date;
 }

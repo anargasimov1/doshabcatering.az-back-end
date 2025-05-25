@@ -1,8 +1,6 @@
 package az.doshabcatering.doshabcatering.entity;
 
 import az.doshabcatering.doshabcatering.enums.Roles;
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
@@ -51,7 +49,6 @@ public class UserEntity implements Serializable {
 
     String otp;
 
-    @JsonFormat(pattern = "dd-MM-yyyy HH:mm")
     LocalDateTime created_at;
 
     LocalDateTime updated_at;
