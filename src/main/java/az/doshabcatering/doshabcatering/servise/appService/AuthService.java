@@ -50,7 +50,7 @@ public class AuthService implements UserDetailsService {
 
     public UserEntity getUserByEmail(String email) {
         return userRepository.findByEmail(email).orElseThrow(
-                () -> new UsernameNotFoundException(email));
+                () -> new UsernameNotFoundException("User not found with email: " + email));
     }
 
     @Override
@@ -135,10 +135,13 @@ public class AuthService implements UserDetailsService {
             UserEntity user = userRepository.findByEmail(requestLogin.getEmail()).orElse(null);
             DtoResponse dtoResponse = new DtoResponse();
             BeanUtils.copyProperties(user, dtoResponse);
+
+
             ResponseCookie cookie = ResponseCookie.from("token", userToken)
                     .httpOnly(true)
-                    .secure(false)
-                    .sameSite("Lax")
+                    .secure(true)
+                    .sameSite("none")
+                    .domain(".doshabcatering.az")
                     .path("/")
                     .maxAge(Duration.ofHours(4))
                     .build();
@@ -151,7 +154,7 @@ public class AuthService implements UserDetailsService {
         }
     }
 
-    @Transactional
+
     public ResponseEntity<?> sendOtpForUpdatePassword(String email) {
         UserEntity user = getUserByEmail(email);
         GenerateRandomOtp generateRandomOtp = new GenerateRandomOtp();
@@ -182,6 +185,25 @@ public class AuthService implements UserDetailsService {
             throw new UsernameNotFoundException("user not found");
         }
         return new ResponseEntity<>("nəsə doğru olmadı birdə cəhd edin", HttpStatus.BAD_REQUEST);
+    }
+
+    public ResponseEntity<?> sendOtp(String email) {
+
+        UserEntity user = userRepository.findByEmail(email).orElse(null);
+        if (user != null) {
+            GenerateRandomOtp generateRandomOtp = new GenerateRandomOtp();
+            String otp = generateRandomOtp.generateOTP();
+            user.setOtp(otp);
+            userRepository.save(user);
+
+            try {
+                mailService.sendMail(email, "email təsdiqi", HtmlTemplates.userVerification(otp));
+
+            } catch (MessagingException ex) {
+                log.error(ex.getMessage());
+            }
+        }
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
 }

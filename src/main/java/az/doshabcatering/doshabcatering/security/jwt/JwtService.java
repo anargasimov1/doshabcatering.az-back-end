@@ -42,7 +42,6 @@ public class JwtService {
         return (List<Map<String, String>>) claims.get("roles");
     }
 
-
     private SecretKey getSigningKey() {
         byte[] keyBytes = Base64.getDecoder().decode(secretKey);
         return Keys.hmacShaKeyFor(keyBytes);

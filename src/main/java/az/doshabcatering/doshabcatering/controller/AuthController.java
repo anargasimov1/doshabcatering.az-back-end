@@ -63,4 +63,9 @@ public class AuthController {
     public Map<String, Object> getUserWithOrders(@PathVariable String email) {
         return authService.getUserWithOrders(email);
     }
+
+    @GetMapping("/otpCode/{email}")
+    public ResponseEntity<?> sendOtp(@PathVariable String email) {
+        return authService.sendOtp(email);
+    }
 }

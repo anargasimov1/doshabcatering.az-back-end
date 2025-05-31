@@ -2,15 +2,14 @@ package az.doshabcatering.doshabcatering.repository.jpaRepo;
 
 
 import az.doshabcatering.doshabcatering.entity.Orders;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 public interface OrderRepository extends JpaRepository<Orders, UUID> {
 
-    Page<Orders> findOrdersByDateBetween(LocalDateTime start, LocalDateTime end, Pageable pageable);
+    List<Orders> findOrdersByDateBetween(LocalDateTime start, LocalDateTime end);
 
 }

@@ -1,12 +1,10 @@
 package az.doshabcatering.doshabcatering.admin.service;
 
 import az.doshabcatering.doshabcatering.entity.Orders;
-import az.doshabcatering.doshabcatering.enums.Status;
 import az.doshabcatering.doshabcatering.repository.jpaRepo.OrderRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -14,6 +12,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -30,23 +29,15 @@ public class AdminOrdersService {
     public void findOrders(UUID id, String status) {
         Orders orders = orderRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Order not found with ID: " + id));
-        Status enumStatus = parseStatus(status);
-        orders.setStatus(enumStatus);
+        orders.setStatus(status);
+        orderRepository.save(orders);
     }
 
-    private Status parseStatus(String statusStr) {
-        try {
-            return Status.valueOf(statusStr.toUpperCase());
-        } catch (IllegalArgumentException | NullPointerException e) {
-            throw new RuntimeException("Invalid status value: " + statusStr);
-        }
-    }
-
-    public Page<Orders> findBetweenDate(Pageable pageable) {
+    public List<Orders> findBetweenDate() {
         LocalDate today = LocalDate.now();
-        LocalDateTime startOfDay = today.atTime(8, 0);
-        LocalDateTime endOfDay = today.atTime(LocalTime.of(19, 0));
-        return orderRepository.findOrdersByDateBetween(startOfDay, endOfDay, pageable);
+        LocalDateTime startOfDay = today.atTime(10, 0);
+        LocalDateTime endOfDay = today.atTime(LocalTime.of(17, 0));
+        return orderRepository.findOrdersByDateBetween(startOfDay, endOfDay);
     }
 
     public ResponseEntity<?> deleteOrder(UUID id) {

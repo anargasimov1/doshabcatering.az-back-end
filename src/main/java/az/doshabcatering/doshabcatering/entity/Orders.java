@@ -2,16 +2,16 @@ package az.doshabcatering.doshabcatering.entity;
 
 import az.doshabcatering.doshabcatering.enums.Status;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.UUID;
 
 @Entity
@@ -31,25 +31,26 @@ public class Orders {
 
     String prince;
 
-    @CreationTimestamp
+
     @JsonFormat(pattern = "dd.MM.YYYY")
     LocalDateTime date;
 
-    @Enumerated(EnumType.STRING)
-    Status status;
+    String status;
 
     String lat;
 
     String lng;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER,cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id")
-    @JsonIgnore
     UserEntity user;
 
     @PrePersist
     void prePersist() {
-        this.status = Status.PENDING;
+        this.status = Status.PENDING.toString();
+        ZoneId bakuZone = ZoneId.of("Asia/Baku");
+        this.date = ZonedDateTime.now(bakuZone).toLocalDateTime();
     }
+
 
 }

@@ -8,6 +8,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 
@@ -25,13 +26,13 @@ public class AdminOrdersController {
     }
 
     @PostMapping("/{id}")
-    public void upDateOrders(@PathVariable UUID id, @RequestParam String status) {
+    public void upDateOrders(@PathVariable UUID id, @RequestBody String status) {
         adminOrdersService.findOrders(id, status);
     }
 
     @GetMapping("/today")
-    public Page<Orders> getOrdersToday(Pageable pageable) {
-        return adminOrdersService.findBetweenDate(pageable);
+    public List<Orders> getOrdersToday() {
+        return adminOrdersService.findBetweenDate();
     }
 
     @DeleteMapping("/{id}")

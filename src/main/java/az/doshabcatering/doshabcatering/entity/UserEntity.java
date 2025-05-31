@@ -1,15 +1,18 @@
 package az.doshabcatering.doshabcatering.entity;
 
 import az.doshabcatering.doshabcatering.enums.Roles;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 
 @Entity
 @Table(name = "users")
@@ -51,19 +54,32 @@ public class UserEntity implements Serializable {
 
     LocalDateTime created_at;
 
+    LocalDateTime otp_expires_at;
+
     LocalDateTime updated_at;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JsonManagedReference
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JsonIgnore
     List<Orders> orders;
 
 
     @PrePersist
-    private void assignDefaultValues() {
+    public void assignDefaultValues() {
         if (roles == null) {
             this.roles = Roles.USER;
         }
-        this.created_at = LocalDateTime.now();
+        ZoneId bakuZone = ZoneId.of("Asia/Baku");
+        this.created_at = ZonedDateTime.now(bakuZone).toLocalDateTime();
+        this.otp_expires_at = ZonedDateTime.now(bakuZone).toLocalDateTime();
+
+    }
+
+    @PreUpdate
+    public void updateTimestamp() {
+        ZoneId bakuZone = ZoneId.of("Asia/Baku");
+        this.updated_at = ZonedDateTime.now(bakuZone).toLocalDateTime();
+        this.otp_expires_at = ZonedDateTime.now(bakuZone).toLocalDateTime();
+
     }
 
 }

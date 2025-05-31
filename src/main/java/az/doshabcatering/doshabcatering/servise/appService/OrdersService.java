@@ -8,6 +8,7 @@ import az.doshabcatering.doshabcatering.servise.elasticService.ElasticOrdersServ
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +23,9 @@ public class OrdersService {
 
     public ResponseEntity<?> save(Orders orders, String email) {
         UserEntity user = authService.getUserByEmail(email);
+        if (!user.isVerified()) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
         orders.setUser(user);
         orderRepository.save(orders);
         log.info("user with email {} has been created order", user.getEmail());
@@ -29,6 +33,6 @@ public class OrdersService {
         BeanUtils.copyProperties(orders, ordersIndex);
         elasticOrdersService.saveOrder(ordersIndex);
         log.info("orders has been saved with orderIndex id {}", ordersIndex.getId());
-        return ResponseEntity.ok("Orders has been saved successfully");
+        return ResponseEntity.ok().build();
     }
 }
